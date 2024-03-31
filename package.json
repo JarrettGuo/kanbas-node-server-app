@@ -1,0 +1,35 @@
+{
+  "type": "module",
+  "name": "kanbas-node-server-app",
+  "version": "1.0.0",
+  "description": "Node.js HTTP Web server for the Kanbas application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node App.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JarrettGuo/kanbas-node-server-app.git"
+  },
+  "keywords": [
+    "NOde",
+    "REST",
+    "Server",
+    "HTTP",
+    "Web",
+    "Development",
+    "CS5610"
+  ],
+  "author": "Jiajun Guo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JarrettGuo/kanbas-node-server-app/issues"
+  },
+  "homepage": "https://github.com/JarrettGuo/kanbas-node-server-app#readme",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
