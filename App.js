@@ -21,10 +21,9 @@ mongoose.connect('mongodb+srv://giuseppi:supersecretpassword@kanbas-database.ejb
 // mongoose.connection.on('error', console.error)
 
 const app = express()
-app.use(
-cors({
-    credentials: true,
-    origin: process.env.FRONTEND_URL
+app.use(cors({
+        credentials: true,
+        origin: process.env.FRONTEND_URL
 }));
 const sessionOptions = {
     secret: process.env.SESSION_SECRET,
