@@ -11,20 +11,17 @@ import AssignmentRoutes from './Kanbas/assignments/routes.js'
 import cors from 'cors'
 // mongoose.connect("mongodb://127.0.0.1:27017/kanbas");
 mongoose.connect('mongodb+srv://giuseppi:supersecretpassword@kanbas-database.ejbdgnv.mongodb.net/Kanbas?retryWrites=true&w=majority&appName=Kanbas-database');
-// mongoose.connect(connection, {
-//     useUnifiedTopology: true,
-//     useNewUrlParser: true,
-//     useFindAndModify: true 
-// }).then(() => console.log('The mongoose connection worked!'))
-//   .catch(error => console.error('Mongoose connection error:', error));
-
-// mongoose.connection.on('error', console.error)
 
 const app = express()
+// app.use(cors({
+//         credentials: true,
+//         origin: process.env.FRONTEND_URL
+// }));
 app.use(cors({
-        credentials: true,
-        origin: process.env.FRONTEND_URL
+    credentials: true,
+    origin: true,
 }));
+
 const sessionOptions = {
     secret: process.env.SESSION_SECRET,
     resave: false,
