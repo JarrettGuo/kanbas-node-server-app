@@ -2,13 +2,13 @@ import * as quizDao from './QuizDao.js';
 import quizModel from './QuizModel.js';
 
 export default function QuizRoutes(app) {
-  // Create a new quiz Example: http://localhost:4000/api/quizzes
+  // Create a new quiz Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes
   app.post("/api/quizzes", async (req, res) => {
     const quiz = await quizDao.createQuiz(req.body);
     res.json(quiz); // Return the created quiz
   });
 
-  // Get all quizzes, with sorting support Example: http://localhost:4000/api/quizzes
+  // Get all quizzes, with sorting support Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes
   app.get("/api/quizzes", async (req, res) => {
     let sort = {};
     if (req.query.sortBy) {
@@ -19,25 +19,25 @@ export default function QuizRoutes(app) {
     res.json(quizzes); // Return the sorted list of quizzes
   });
 
-  // Get a single quiz by ID Example: http://localhost:4000/api/quizzes/6616ab177482a909f4a36c09
+  // Get a single quiz by ID Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09
   app.get("/api/quizzes/:quizId", async (req, res) => {
     const quiz = await quizDao.findQuizById(req.params.quizId);
     res.json(quiz); // Return the quiz for the specified ID
   });
 
-  // Update a quiz by its ID Example: http://localhost:4000/api/quizzes/6616b25b30e0b9d0a5f9b15d
+  // Update a quiz by its ID Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616b25b30e0b9d0a5f9b15d
   app.put("/api/quizzes/:quizId", async (req, res) => {
     const status = await quizDao.updateQuiz(req.params.quizId, req.body);
     res.json(status); // Return the update result
   });
 
-  // Delete a quiz by its ID Example: http://localhost:4000/api/quizzes/6616ab177482a909f4a36c09
+  // Delete a quiz by its ID Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09
   app.delete("/api/quizzes/:quizId", async (req, res) => {
     const status = await quizDao.deleteQuiz(req.params.quizId);
     res.json(status); // Return the deletion result
   });
 
-  // Publish a quiz Example: http://localhost:4000/api/quizzes/6616ab177482a909f4a36c09/publish
+  // Publish a quiz Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09/publish
   app.put("/api/quizzes/:quizId/publish", async (req, res) => {
     try {
       const quiz = await quizModel.findByIdAndUpdate(req.params.quizId, {
@@ -51,7 +51,7 @@ export default function QuizRoutes(app) {
     }
   });
 
-  // Unpublish a quiz Example: http://localhost:4000/api/quizzes/6616ab177482a909f4a36c09/unpublish
+  // Unpublish a quiz Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09/unpublish
   app.put("/api/quizzes/:quizId/unpublish", async (req, res) => {
     try {
       const quiz = await quizModel.findByIdAndUpdate(req.params.quizId, {
@@ -64,7 +64,7 @@ export default function QuizRoutes(app) {
     }
   });
 
-  // Get all quizzes under a specified course ID Example: http://localhost:4000/api/quizzes?courseId=WD101
+  // Get all quizzes under a specified course ID Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes?courseId=WD101
   app.get("/api/quizzes", async (req, res) => {
     let query = {};
     let sort = {};
@@ -85,6 +85,15 @@ export default function QuizRoutes(app) {
       res.json(quizzes); // Return the filtered and sorted list of quizzes
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  // Copy a quiz Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09/copy
+  app.post("/api/quizzes/:quizId/copy", async (req, res) => {
+    try {
+      const copiedQuiz = await quizDao.copyQuiz(req.params.quizId);
+      res.json(copiedQuiz); // Return the copied quiz
+    } catch (error) {
+      res.status(500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
