@@ -10,8 +10,8 @@ import ModuleRoutes from './Kanbas/modules/routes.js'
 import AssignmentRoutes from './Kanbas/assignments/routes.js'
 import QuizRoutes from "./Quiz/QuizRoutes.js";
 import cors from 'cors'
-mongoose.connect("mongodb://127.0.0.1:27017/kanbas");
-// mongoose.connect('mongodb+srv://giuseppi:supersecretpassword@kanbas-database.ejbdgnv.mongodb.net/Kanbas?retryWrites=true&w=majority&appName=Kanbas-database');
+// mongoose.connect("mongodb://127.0.0.1:27017/kanbas");
+mongoose.connect('mongodb+srv://giuseppi:supersecretpassword@kanbas-database.ejbdgnv.mongodb.net/Kanbas?retryWrites=true&w=majority&appName=Kanbas-database');
 
 const app = express()
 // app.use(cors({
