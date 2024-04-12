@@ -7,7 +7,10 @@ const questionSchema = new mongoose.Schema({
     enum: ["MULTIPLE_CHOICE", "TRUE_FALSE", "FILL_IN_BLANKS"],
     required: true,
   },
-  title: String, // Question title
+  title: { // Question title
+    type: String,
+    required:true
+  },
   points: Number, // Points for the question
   question: String, // Question description
   choices: { // Options for multiple choice questions, required only for multiple choice questions
@@ -25,10 +28,15 @@ const quizSchema = new mongoose.Schema({
   title: { type: String, required: true }, // Quiz title
   courseId: { type: String, required: true }, // Course ID the quiz belongs to
   description: String, // Quiz description
-  type: { // Quiz type, such as quizzes, exams, assignments, projects, etc.
+  type: { // Quiz Type - Graded Quiz (default), Practice Quiz, Graded Survey, Ungraded Survey
     type: String,
-    enum: ["QUIZZES", "EXAMS", "ASSIGNMENTS", "PROJECT"],
-    default: "QUIZZES",
+    enum: ["Graded Quiz", "Practice Quiz", "Graded Survey", "Ungraded Survey"],
+    default: "Graded Quiz",
+  },
+  assignmentGroup:{ //Assignment Group - Quizzes (default), Exams, Assignments, Project
+    type: String,
+    enum:["Quizzes", "Exams", "Assignments", "Project"],
+    default: "Quizzes"
   },
   isPublished: { type: Boolean, default: false }, // Whether the quiz is published
   publishedDate: { // Publication date, set only when the quiz is published
