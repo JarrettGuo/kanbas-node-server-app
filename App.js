@@ -9,6 +9,7 @@ import CourseRoutes from './Kanbas/courses/routes.js'
 import ModuleRoutes from './Kanbas/modules/routes.js'
 import AssignmentRoutes from './Kanbas/assignments/routes.js'
 import QuizRoutes from "./Quiz/QuizRoutes.js";
+// import QuestionRoutes from "./Question/QuestionRoutes.js";
 import cors from 'cors'
 // mongoose.connect("mongodb://127.0.0.1:27017/kanbas");
 mongoose.connect('mongodb+srv://giuseppi:supersecretpassword@kanbas-database.ejbdgnv.mongodb.net/Kanbas?retryWrites=true&w=majority&appName=Kanbas-database');
@@ -48,6 +49,7 @@ Lab5(app)
 ModuleRoutes(app)
 AssignmentRoutes(app)
 QuizRoutes(app)
+// QuestionRoutes(app)
 
 app.listen(process.env.PORT || 4000);
 // app.listen(4000);

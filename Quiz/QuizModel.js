@@ -1,28 +1,5 @@
 import mongoose from "mongoose";
 
-// Define the question model, including question type, title, points, description, options, and correct answers
-const questionSchema = new mongoose.Schema({
-  type: { // Question type, such as multiple choice, true/false, fill in the blanks, etc.
-    type: String,
-    enum: ["MULTIPLE_CHOICE", "TRUE_FALSE", "FILL_IN_BLANKS"],
-    required: true,
-  },
-  title: { // Question title
-    type: String,
-    required:true
-  },
-  points: Number, // Points for the question
-  question: String, // Question description
-  choices: { // Options for multiple choice questions, required only for multiple choice questions
-    type: [String],
-    required: function() { return this.type === "MULTIPLE_CHOICE"; }
-  },
-  correct: { // Correct answer(s), supports scenarios with multiple correct answers
-    type: [String],
-    required: true
-  },
-}, { _id: false }); // Disable internal _id generation since questions are embedded as sub-documents
-
 // Define the quiz model, including title, course ID, description, type, publication status, publication date, etc.
 const quizSchema = new mongoose.Schema({
   title: { type: String, required: true }, // Quiz title
@@ -33,6 +10,7 @@ const quizSchema = new mongoose.Schema({
     enum: ["Graded Quiz", "Practice Quiz", "Graded Survey", "Ungraded Survey"],
     default: "Graded Quiz",
   },
+  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'QuestionModel' }],
   assignmentGroup:{ //Assignment Group - Quizzes (default), Exams, Assignments, Project
     type: String,
     enum:["Quizzes", "Exams", "Assignments", "Project"],
@@ -43,7 +21,6 @@ const quizSchema = new mongoose.Schema({
     type: Date,
     required: function() { return this.isPublished; }
   },
-  questions: [questionSchema], // List of questions included in the quiz
   dueDate: Date, // Due date
   availableDate: Date, // Start date
   untilDate: Date, // End date

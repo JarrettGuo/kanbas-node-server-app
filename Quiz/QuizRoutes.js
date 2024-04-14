@@ -1,99 +1,149 @@
 import * as quizDao from './QuizDao.js';
-import quizModel from './QuizModel.js';
+import * as questionDao from '../Question/QuestionDao.js';
+import Quiz from './QuizModel.js';
 
 export default function QuizRoutes(app) {
-  // Create a new quiz Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes
+  // Create a new quiz and its associated questions - POST http://localhost:4000/api/quizzes
   app.post("/api/quizzes", async (req, res) => {
-    const quiz = await quizDao.createQuiz(req.body);
-    res.json(quiz); // Return the created quiz
-  });
-
-  // Get all quizzes, with sorting support Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes
-  app.get("/api/quizzes", async (req, res) => {
-    let sort = {};
-    if (req.query.sortBy) {
-      const parts = req.query.sortBy.split(':');
-      sort[parts[0]] = parts[1] === 'asc' ? 1 : -1; // Parse sorting parameters
+    try {
+      const { questions, ...quizDetails } = req.body;
+      const quiz = await quizDao.createQuiz(quizDetails);
+      const savedQuestions = await Promise.all(questions.map(question => {
+        return questionDao.createQuestion({ ...question, quizId: quiz._id });
+      }));
+      quiz.questions = savedQuestions.map(q => q._id);
+      await quiz.save();
+      res.status(201).json(quiz);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
     }
-    const quizzes = await quizDao.findAllQuizzes().sort(sort);
-    res.json(quizzes); // Return the sorted list of quizzes
   });
 
-  // Get a single quiz by ID Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09
+  // Get all quizzes - GET http://localhost:4000/api/quizzes
+  app.get("/api/quizzes", async (req, res) => {
+    try {
+      const quizzes = await quizDao.findAllQuizzes();
+      res.json(quizzes);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
+    }
+  });
+
+  // Get a single quiz by ID including its questions - GET http://localhost:4000/api/quizzes/661bc775197093838381d3c7
   app.get("/api/quizzes/:quizId", async (req, res) => {
-    const quiz = await quizDao.findQuizById(req.params.quizId);
-    res.json(quiz); // Return the quiz for the specified ID
+    try {
+      const quiz = await quizDao.findQuizById(req.params.quizId).populate('questions');
+      if (!quiz) {
+        res.status(404).json({ error: 'Quiz not found' });
+      } else {
+        res.json(quiz);
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
+    }
   });
 
-  // Update a quiz by its ID Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616b25b30e0b9d0a5f9b15d
+  // Update a quiz and its questions - PUT http://localhost:4000/api/quizzes/661bc997197093838381d3da
   app.put("/api/quizzes/:quizId", async (req, res) => {
-    const status = await quizDao.updateQuiz(req.params.quizId, req.body);
-    res.json(status); // Return the update result
+    try {
+      const { questions, ...quizDetails } = req.body;
+      const updatedQuiz = await quizDao.updateQuiz(req.params.quizId, quizDetails);
+      if (questions && questions.length) {
+        await questionDao.findQuestionsByQuizId(req.params.quizId).then(existingQuestions => {
+          const updates = questions.map(question => {
+            if (question._id) {
+              return questionDao.updateQuestion(question._id, question);
+            } else {
+              return questionDao.createQuestion({ ...question, quizId: req.params.quizId });
+            }
+          });
+          return Promise.all(updates);
+        });
+      }
+      res.json(updatedQuiz);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
+    }
   });
 
-  // Delete a quiz by its ID Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09
+  // Delete a quiz and its corresponding questions - DELETE http://localhost:4000/api/quizzes/661bc84b197093838381d3d1
   app.delete("/api/quizzes/:quizId", async (req, res) => {
-    const status = await quizDao.deleteQuiz(req.params.quizId);
-    res.json(status); // Return the deletion result
+    try {
+      await quizDao.deleteQuiz(req.params.quizId);
+      await questionDao.deleteQuestionsByQuizId(req.params.quizId);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
+    }
   });
 
-  // Publish a quiz Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09/publish
+  // Publish a quiz - PUT http://localhost:4000/api/quizzes/661bc997197093838381d3da/publish
   app.put("/api/quizzes/:quizId/publish", async (req, res) => {
     try {
-      const quiz = await quizModel.findByIdAndUpdate(req.params.quizId, {
+      const updatedQuiz = await quizDao.updateQuiz(req.params.quizId, {
         isPublished: true,
-        publishedDate: new Date() // Set the publication date
-      }, { new: true });
-      res.json(quiz); // Return the updated quiz
+        publishedDate: new Date()
+      });
+      res.json(updatedQuiz);
     } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-      console.error(error);
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
     }
   });
 
-  // Unpublish a quiz Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09/unpublish
+  // Unpublish a quiz - PUT http://localhost:4000/api/quizzes/661bc997197093838381d3da/unpublish
   app.put("/api/quizzes/:quizId/unpublish", async (req, res) => {
     try {
-      const quiz = await quizModel.findByIdAndUpdate(req.params.quizId, {
+      const updatedQuiz = await quizDao.updateQuiz(req.params.quizId, {
         isPublished: false,
-        publishedDate: null // Clear the publication date
-      }, { new: true });
-      res.json(quiz); // Return the updated quiz
+        publishedDate: null
+      });
+      res.json(updatedQuiz);
     } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
     }
   });
 
-  // Get all quizzes under a specified course ID Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes?courseId=WD101
-  app.get("/api/quizzes", async (req, res) => {
-    let query = {};
-    let sort = {};
-
-    // Check if there's a courseId query parameter
-    if (req.query.courseId) {
-      query.courseId = req.query.courseId; // Filter by courseId
-    }
-
-    // Check if there's a sorting parameter
-    if (req.query.sortBy) {
-      const parts = req.query.sortBy.split(':');
-      sort[parts[0]] = parts[1] === 'asc' ? 1 : -1;
-    }
-
-    try {
-      const quizzes = await quizDao.findAllQuizzes().find(query).sort(sort);
-      res.json(quizzes); // Return the filtered and sorted list of quizzes
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-  // Copy a quiz Example: https://kanbas-node-server-app-cxw2.onrender.com/api/quizzes/6616ab177482a909f4a36c09/copy
+  // Copy a quiz - POST http://localhost:4000/api/quizzes/661bc997197093838381d3da/copy
   app.post("/api/quizzes/:quizId/copy", async (req, res) => {
     try {
-      const copiedQuiz = await quizDao.copyQuiz(req.params.quizId);
-      res.json(copiedQuiz); // Return the copied quiz
+      const originalQuiz = await quizDao.findQuizById(req.params.quizId);
+      if (!originalQuiz) {
+        return res.status(404).send('Original quiz not found');
+      }
+      const quizData = originalQuiz.toObject();
+      delete quizData._id;
+      quizData.title = `Copy of ${quizData.title}`;
+      const newQuiz = await quizDao.createQuiz(quizData);
+      const originalQuestions = await questionDao.findQuestionsByQuizId(originalQuiz._id);
+      const copiedQuestions = originalQuestions.map(question => ({
+        ...question.toObject(),
+        quizId: newQuiz._id,
+        _id: undefined
+      }));
+      await questionDao.createQuestion(copiedQuestions);
+      res.json(newQuiz);
     } catch (error) {
-      res.status(500).json({ error: error.message || 'Internal server error' });
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
+    }
+  });
+
+  // Delete a specific question - DELETE http://localhost:4000/api/quizzes/661bce8d3c80f91af4be0f6f/questions/661bc997197093838381d3dc
+  app.delete("/api/quizzes/:quizId/questions/:questionId", async (req, res) => {
+    try {
+      const { quizId, questionId } = req.params;
+      const quiz = await quizDao.findQuizById(quizId);
+      if (!quiz) {
+        return res.status(404).json({ error: 'Quiz not found' });
+      }
+      if (!quiz.questions.includes(questionId)) {
+        return res.status(404).json({ error: 'Question not found in this quiz' });
+      }
+      await questionDao.deleteQuestionById(questionId);
+      quiz.questions = quiz.questions.filter(id => id.toString() !== questionId);
+      await quiz.save();
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
     }
   });
 }
