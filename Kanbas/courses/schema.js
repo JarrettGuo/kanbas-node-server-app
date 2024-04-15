@@ -1,11 +1,15 @@
-// courseSchema.js
 import mongoose from "mongoose";
 
 const courseSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  instructor: { type: String, required: true },
+  id: { type: String, required: true },
+  name: { type: String, required: true },
+  number: { type: String, required: true },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
+  department: { type: String, required: true },
+  credits: { type: Number, required: true },
   description: String,
-  publishedDate: { type: Date, default: Date.now }
+  image: String
 }, { collection: "courses" });
 
 export default courseSchema;

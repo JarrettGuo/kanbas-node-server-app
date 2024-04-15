@@ -1,50 +1,51 @@
-import db from "../Database/index.js";
+import * as assignmentDao from './dao.js';
 
 function AssignmentRoutes(app) {
-  // Update an assignment
-  app.put("/api/assignments/:aid", (req, res) => {
-    const { aid } = req.params;
-    const assignmentIndex = db.assignments.findIndex((a) => a._id === aid);
-    if (assignmentIndex !== -1) {
-      db.assignments[assignmentIndex] = {
-        ...db.assignments[assignmentIndex],
-        ...req.body
-      };
-      res.sendStatus(204);
-    } else {
-      res.sendStatus(404);
-    }
-  });
-
-  // Delete an assignment
-  app.delete("/api/assignments/:aid", (req, res) => {
-    const { aid } = req.params;
-    const initialLength = db.assignments.length;
-    db.assignments = db.assignments.filter((a) => a._id !== aid);
-    if (initialLength > db.assignments.length) {
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(404); // Not Found if the assignment to delete doesn't exist
+  // Get all assignments for a course
+  app.get("/api/courses/:cid/assignments", async (req, res) => {
+    try {
+      const assignments = await assignmentDao.findAllAssignmentsByCourse(req.params.cid);
+      res.json(assignments);
+    } catch (error) {
+      res.status(500).send(error.message);
     }
   });
 
   // Create a new assignment for a course
-  app.post("/api/courses/:cid/assignments", (req, res) => {
-    const { cid } = req.params;
-    const newAssignment = {
-      ...req.body,
-      course: cid,
-      _id: new Date().getTime().toString(),
-    };
-    db.assignments.push(newAssignment);
-    res.status(201).send(newAssignment); // Use 201 status code for created resource
+  app.post("/api/courses/:cid/assignments", async (req, res) => {
+    try {
+      const newAssignment = await assignmentDao.createAssignment({ ...req.body, course: req.params.cid });
+      res.status(201).json(newAssignment);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
   });
 
-  // Get all assignments for a course
-  app.get("/api/courses/:cid/assignments", (req, res) => {
-    const { cid } = req.params;
-    const assignments = db.assignments.filter((a) => a.course === cid);
-    res.send(assignments);
+  // Update an assignment
+  app.put("/api/assignments/:aid", async (req, res) => {
+    try {
+      const updatedAssignment = await assignmentDao.updateAssignment(req.params.aid, req.body);
+      if (!updatedAssignment) {
+        return res.status(404).send('Assignment not found');
+      }
+      res.sendStatus(204);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  });
+
+  // Delete an assignment
+  app.delete("/api/assignments/:aid", async (req, res) => {
+    try {
+      const result = await assignmentDao.deleteAssignment(req.params.aid);
+      if (result) {
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(404); // Not Found if the assignment to delete doesn't exist
+      }
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
   });
 }
 
