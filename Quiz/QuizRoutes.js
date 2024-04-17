@@ -146,4 +146,18 @@ export default function QuizRoutes(app) {
       res.status(500).json({ error: 'Internal server error. ' + error.message });
     }
   });
+  // Get quizzes by courseId - GET http://localhost:4000/api/quizzes/course/:courseId
+  app.get("/api/quizzes/course/:courseId", async (req, res) => {
+    try {
+      const courseId = req.params.courseId;
+      const quizzes = await quizDao.findQuizzesByCourseId(courseId);
+      if (!quizzes.length) {
+        return res.status(404).json({ error: 'No quizzes found for this course ID' });
+      }
+      res.json(quizzes);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
+    }
+  });
+
 }

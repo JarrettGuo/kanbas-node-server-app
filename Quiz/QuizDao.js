@@ -21,3 +21,7 @@ export const updateQuiz = (quizId, quizData) => {
 export const deleteQuiz = (quizId) => {
     return Quiz.deleteOne({ _id: quizId });
 };
+
+export const findQuizzesByCourseId = (courseId) => {
+    return Quiz.find({ courseId: courseId });
+};
