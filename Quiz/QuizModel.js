@@ -24,12 +24,12 @@ const quizSchema = new mongoose.Schema({
   dueDate: Date, // Due date
   availableDate: Date, // Start date
   untilDate: Date, // End date
-  shuffleAnswers: { type: Boolean, default: false }, // Whether to shuffle answer order
+  shuffleAnswers: { type: Boolean, default: true }, // Whether to shuffle answer order
   timeLimit: Number, // Time limit
   multipleAttempts: { type: Boolean, default: false }, // Whether multiple attempts are allowed
   showCorrectAnswers: Boolean, // Whether to show correct answers
   accessCode: String, // Access code
-  oneQuestionAtATime: { type: Boolean, default: false }, // Whether to show one question at a time
+  oneQuestionAtATime: { type: Boolean, default: true }, // Whether to show one question at a time
   webcamRequired: { type: Boolean, default: false }, // Whether a webcam is required
   lockQuestionsAfterAnswering: { type: Boolean, default: false }, // Whether to lock questions after answering
 }, { collection: "quizzes" }); // Specify the collection to store documents in as "quizzes"
