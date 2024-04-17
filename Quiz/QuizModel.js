@@ -24,7 +24,7 @@ const quizSchema = new mongoose.Schema({
   dueDate: Date, // Due date
   availableDate: Date, // Start date
   untilDate: Date, // End date
-  shuffleAnswers: { type: Boolean, default: true }, // Whether to shuffle answer order
+  shuffleAnswers: { type: Boolean, default: true }, // Whether to shuffle answer order, default is true
   timeLimit: Number, // Time limit
   multipleAttempts: { type: Boolean, default: false }, // Whether multiple attempts are allowed
   showCorrectAnswers: Boolean, // Whether to show correct answers
