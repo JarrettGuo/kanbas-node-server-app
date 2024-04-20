@@ -138,7 +138,7 @@ export default function QuizRoutes(app) {
       if (!quiz.questions.includes(questionId)) {
         return res.status(404).json({ error: 'Question not found in this quiz' });
       }
-      await questionDao.deleteQuestionById(questionId);
+      await questionDao.deleteQuestionsByQuizId(questionId);
       quiz.questions = quiz.questions.filter(id => id.toString() !== questionId);
       await quiz.save();
       res.status(204).send();
