@@ -152,7 +152,7 @@ export default function QuizRoutes(app) {
       const courseId = req.params.courseId;
       const quizzes = await quizDao.findQuizzesByCourseId(courseId);
       if (!quizzes.length) {
-        return res.status(404).json({ error: 'No quizzes found for this course ID' });
+        return;
       }
       res.json(quizzes);
     } catch (error) {
