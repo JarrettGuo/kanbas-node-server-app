@@ -16,6 +16,7 @@ const quizSchema = new mongoose.Schema({
     enum:["Quizzes", "Exams", "Assignments", "Project"],
     default: "Quizzes"
   },
+  points: { type: Number, default: 100 }, // Total points
   isPublished: { type: Boolean, default: false }, // Whether the quiz is published
   publishedDate: { // Publication date, set only when the quiz is published
     type: Date,

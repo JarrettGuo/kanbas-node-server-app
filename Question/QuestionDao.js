@@ -17,3 +17,6 @@ export const deleteQuestionById = (id) => {
     return Question.findByIdAndDelete(id);
   };
   
+  export const findQuestionById = (id) => {
+    return Question.findById(id);
+};
