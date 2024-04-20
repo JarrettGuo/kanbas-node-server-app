@@ -20,3 +20,8 @@ export const deleteQuestionById = (id) => {
   export const findQuestionById = (id) => {
     return Question.findById(id);
 };
+
+export const deleteQuestionsByQuizId = (quizId) => {
+  // This function will find and delete all questions associated with the provided quizId
+  return Question.deleteMany({ quizId: quizId });
+};
