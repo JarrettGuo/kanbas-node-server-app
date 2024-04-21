@@ -159,5 +159,17 @@ export default function QuizRoutes(app) {
       res.status(500).json({ error: 'Internal server error. ' + error.message });
     }
   });
-
+  // Get all questions for a specific quiz by quiz ID - GET http://localhost:4000/api/quizzes/:quizId/questions
+  app.get("/api/quizzes/:quizId/questions", async (req, res) => {
+    try {
+      const { quizId } = req.params;
+      const questions = await questionDao.findQuestionsByQuizId(quizId);
+      if (!questions.length) {
+        return res.status(404).json({ error: 'No questions found for this quiz.' });
+      }
+      res.json(questions);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
+    }
+  });
 }
