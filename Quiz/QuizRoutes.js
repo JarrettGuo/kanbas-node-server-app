@@ -165,7 +165,7 @@ export default function QuizRoutes(app) {
       const { quizId } = req.params;
       const questions = await questionDao.findQuestionsByQuizId(quizId);
       if (!questions.length) {
-        return res.status(404).json({ error: 'No questions found for this quiz.' });
+        return;
       }
       res.json(questions);
     } catch (error) {
