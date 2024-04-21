@@ -5,14 +5,18 @@ import Quiz from './QuizModel.js';
 export default function QuizRoutes(app) {
   // Create a new quiz and its associated questions - POST http://localhost:4000/api/quizzes
   app.post("/api/quizzes", async (req, res) => {
-    const { questions, ...quizDetails } = req.body;
-    const quiz = await quizDao.createQuiz(quizDetails);
-    const savedQuestions = await Promise.all(questions.map(question => {
-      return questionDao.createQuestion({ ...question, quizId: quiz._id });
-    }));
-    quiz.questions = savedQuestions.map(q => q._id);
-    await quiz.save();
-    res.status(201).json(quiz);
+    try {
+      const { questions, ...quizDetails } = req.body;
+      const quiz = await quizDao.createQuiz(quizDetails);
+      const savedQuestions = await Promise.all(questions.map(question => {
+        return questionDao.createQuestion({ ...question, quizId: quiz._id });
+      }));
+      quiz.questions = savedQuestions.map(q => q._id);
+      await quiz.save();
+      res.status(201).json(quiz);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error. ' + error.message });
+    }
   });
 
   // Get all quizzes - GET http://localhost:4000/api/quizzes
