@@ -18,6 +18,7 @@
 - **questions** (Array of ObjectIds, references `QuestionModel`): List of questions included in the quiz.
 - **assignmentGroup** (String): Categorizes the quiz under different educational activities like Quizzes, Exams, Assignments, or Projects. Default is "Quizzes".
 - **isPublished** (Boolean): Indicates if the quiz is currently available to users. Default is `false`.
+- **points** (Number): The points of quiz. Default is 0.
 - **publishedDate** (Date): Date when the quiz is published. Required only if `isPublished` is true.
 - **dueDate** (Date): The deadline by which the quiz must be completed.
 - **availableDate** (Date): Start date from when the quiz becomes available.
