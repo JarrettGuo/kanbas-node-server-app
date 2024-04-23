@@ -49,22 +49,20 @@ export default function QuizRoutes(app) {
       const { questions, ...quizDetails } = req.body;
       const updatedQuiz = await quizDao.updateQuiz(req.params.quizId, quizDetails);
       if (questions && questions.length) {
-        await questionDao.findQuestionsByQuizId(req.params.quizId).then(existingQuestions => {
-          const updates = questions.map(question => {
-            if (question._id) {
-              return questionDao.updateQuestion(question._id, question);
-            } else {
-              return questionDao.createQuestion({ ...question, quizId: req.params.quizId });
-            }
-          });
-          return Promise.all(updates);
+        const questionPromises = questions.map(question => {
+          if (!question._id) { // 新增 question
+            return questionDao.createQuestion({ ...question, quizId: req.params.quizId });
+          } else { // 更新现有 question
+            return questionDao.updateQuestion(question._id, question);
+          }
         });
+        await Promise.all(questionPromises);
       }
       res.json(updatedQuiz);
     } catch (error) {
       res.status(500).json({ error: 'Internal server error. ' + error.message });
     }
-  });
+  });  
 
   // Delete a quiz and its corresponding questions - DELETE http://localhost:4000/api/quizzes/661bc84b197093838381d3d1
   app.delete("/api/quizzes/:quizId", async (req, res) => {
