@@ -48,15 +48,18 @@ export default function QuizRoutes(app) {
     try {
       const { questions, ...quizDetails } = req.body;
       const updatedQuiz = await quizDao.updateQuiz(req.params.quizId, quizDetails);
+  
       if (questions && questions.length) {
         const questionPromises = questions.map(question => {
-          if (!question._id) { // 新增 question
+          if (!question._id) { // 添加新的 question
             return questionDao.createQuestion({ ...question, quizId: req.params.quizId });
           } else { // 更新现有 question
             return questionDao.updateQuestion(question._id, question);
           }
         });
-        await Promise.all(questionPromises);
+        const updatedQuestions = await Promise.all(questionPromises);
+        updatedQuiz.questions = updatedQuestions.map(q => q._id);
+        await updatedQuiz.save(); // 确保 quiz 更新后保存
       }
       res.json(updatedQuiz);
     } catch (error) {
