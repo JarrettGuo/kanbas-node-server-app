@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const questionSchema = new mongoose.Schema({
   quizId: { type: mongoose.Schema.Types.ObjectId, ref: 'QuizModel' },
   type: { type: String, enum: ["MULTIPLE_CHOICE", "TRUE_FALSE", "FILL_IN_BLANKS"], default: "MULTIPLE_CHOICE"},
-  title: { type: String, required: true },
+  title: { type: String, default: "Untitled Question"},
   points: Number,
   description: String,
   choices: [String],
