@@ -26,10 +26,10 @@ const quizSchema = new mongoose.Schema({
   availableDate: Date, // Start date
   untilDate: Date, // End date
   shuffleAnswers: { type: Boolean, default: true }, // Whether to shuffle answer order, default is true
-  timeLimit: Number, // Time limit
+  timeLimit: { type: Number, default: 1200 }, // Time limit
   multipleAttempts: { type: Boolean, default: false }, // Whether multiple attempts are allowed
   showCorrectAnswers: Boolean, // Whether to show correct answers
-  accessCode: String, // Access code
+  accessCode: { type:String, default:''}, // Access code
   oneQuestionAtATime: { type: Boolean, default: true }, // Whether to show one question at a time
   webcamRequired: { type: Boolean, default: false }, // Whether a webcam is required
   lockQuestionsAfterAnswering: { type: Boolean, default: false }, // Whether to lock questions after answering
