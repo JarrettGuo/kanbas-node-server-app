@@ -47,22 +47,35 @@ export default function QuizRoutes(app) {
   app.put("/api/quizzes/:quizId", async (req, res) => {
     try {
       const { questions, ...quizDetails } = req.body;
-      const updatedQuiz = await quizDao.updateQuiz(req.params.quizId, quizDetails);
+      let updatedQuiz = await quizDao.updateQuiz(req.params.quizId, quizDetails);
   
-      if (questions && questions.length) {
-        const questionPromises = questions.map(question => {
-          if (!question._id) { // 添加新的 question
-            return questionDao.createQuestion({ ...question, quizId: req.params.quizId });
-          } else { // 更新现有 question
-            return questionDao.updateQuestion(question._id, question);
-          }
-        });
-        const updatedQuestions = await Promise.all(questionPromises);
-        updatedQuiz.questions = updatedQuestions.map(q => q._id);
-        await updatedQuiz.save(); // 确保 quiz 更新后保存
+      // Check if 'questions' is explicitly provided
+      if (questions !== undefined) {
+        if (questions.length === 0) {
+          // If empty array, remove all questions linked to this quiz
+          await questionDao.deleteQuestionsByQuizId(req.params.quizId);
+          updatedQuiz.questions = [];
+        } else {
+          // Handle question creation or updates
+          const questionPromises = questions.map(question => {
+            if (!question._id) {
+              return questionDao.createQuestion({ ...question, quizId: req.params.quizId });
+            } else {
+              return questionDao.updateQuestion(question._id, question);
+            }
+          });
+          const updatedQuestions = await Promise.all(questionPromises);
+          updatedQuiz.questions = updatedQuestions.map(q => q._id);
+        }
+        // Save changes to quiz
+        await updatedQuiz.save();
       }
+  
+      // Optionally repopulate updated quiz for returning
+      updatedQuiz = await Quiz.findById(updatedQuiz._id).populate('questions');
       res.json(updatedQuiz);
     } catch (error) {
+      console.error("Update failed:", error);
       res.status(500).json({ error: 'Internal server error. ' + error.message });
     }
   });  
