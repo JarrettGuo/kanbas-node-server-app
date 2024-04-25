@@ -24,7 +24,7 @@
 - **availableDate** (Date): Start date from when the quiz becomes available.
 - **untilDate** (Date): End date after which the quiz is no longer available.
 - **shuffleAnswers** (Boolean): Whether the answer choices should be shuffled. Default is true.
-- **timeLimit** (Number): Duration in minutes that the participant has to complete the quiz.
+- **timeLimit** (Number): Duration in minutes that the participant has to complete the quiz. Default is `1200s`
 - **multipleAttempts** (Boolean): Whether the quiz allows multiple attempts. Default is `false`.
 - **showCorrectAnswers** (Boolean): Whether correct answers are shown after quiz completion.
 - **accessCode** (String): Optional code required to access the quiz.
