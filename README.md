@@ -24,11 +24,11 @@
 - **availableDate** (Date): Start date from when the quiz becomes available.
 - **untilDate** (Date): End date after which the quiz is no longer available.
 - **shuffleAnswers** (Boolean): Whether the answer choices should be shuffled. Default is true.
-- **timeLimit** (Number): Duration in minutes that the participant has to complete the quiz. Default is `1200s`
+- **timeLimit** (Number): Duration in minutes that the participant has to complete the quiz. Default is `20minutes`
 - **multipleAttempts** (Boolean): Whether the quiz allows multiple attempts. Default is `false`.
 - **showCorrectAnswers** (Boolean): Whether correct answers are shown after quiz completion.
-- **accessCode** (String): Optional code required to access the quiz.
-- **oneQuestionAtATime** (Boolean): Whether questions are displayed one at a time. Default is true.
+- **accessCode** (String): Optional code required to access the quiz. Default is `''`.
+- **oneQuestionAtATime** (Boolean): Whether questions are displayed one at a time. Default is `true`.
 - **webcamRequired** (Boolean): Whether participation requires a webcam. Default is `false`.
 - **lockQuestionsAfterAnswering** (Boolean): Whether questions are locked after answering. Default is `false`.
 
